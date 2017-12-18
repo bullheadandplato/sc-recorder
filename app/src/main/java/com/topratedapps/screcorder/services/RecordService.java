@@ -36,9 +36,12 @@ public class RecordService extends Service {
     private VirtualDisplay mVirtualDisplay;
     private MediaProjectionManager mMediaProjectionManager;
     private SurfaceView mSurfaceView;
+    private boolean isRecording = false;
 
     private final static String CHANNEL_ID = "Main";
-    private static final String EXIT_APP_FILTER = "exit_app";
+    private static final String EXIT_INTENT_FILTER = "exit_app";
+    private static final String CAPTURE_INTENT_FILTER = "capture_app";
+    private static final String STOP_CAPTURE_FILTER = "stop_capture";
     public static final String EXTRA_RESULT_CODE = "resultCode";
     public static final String EXTRA_RESULT_INTENT = "resultIntent";
     public static final String OUTPUT_PATH =
@@ -73,14 +76,13 @@ public class RecordService extends Service {
     }
 
     private void init(Intent intent) {
-        registerReceiver(exitReceiver, new IntentFilter(EXIT_APP_FILTER));
+        registerReceiver(exitReceiver, new IntentFilter(EXIT_INTENT_FILTER));
     }
 
     private void showRunningNotification() {
+        PendingIntent secondAction = isRecording ? stopCaptureIntent() : captureIntent();
+        String secondString = isRecording ? "Stop" : "Record";
 
-        Intent exitIntent = new Intent(EXIT_APP_FILTER);
-        PendingIntent exitPendingIntent =
-                PendingIntent.getBroadcast(this, 1, exitIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Intent launchAppIntent = new Intent(this, MainActivity.class);
         launchAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent launchPendingIntent =
@@ -89,7 +91,8 @@ public class RecordService extends Service {
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_notification_small)
                         .setContentTitle("Screen recorder is running")
-                        .addAction(R.drawable.ic_notification_close, "Exit", exitPendingIntent)
+                        .addAction(R.drawable.ic_notification_close, "Exit", exitPendingIntent())
+                        .addAction(R.drawable.ic_notification_small, secondString, secondAction)
                         .setContentIntent(launchPendingIntent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //create notification channel
@@ -99,6 +102,22 @@ public class RecordService extends Service {
         }
         startForeground(1, notificationBuilder.build());
 
+    }
+
+    private PendingIntent stopCaptureIntent() {
+        return exitPendingIntent();
+    }
+
+    private PendingIntent exitPendingIntent() {
+        Intent exitIntent = new Intent(EXIT_INTENT_FILTER);
+        return PendingIntent.getBroadcast(this, 1,
+                exitIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private PendingIntent captureIntent() {
+        Intent intent = new Intent(CAPTURE_INTENT_FILTER);
+        return PendingIntent.getBroadcast(this, 10, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private BroadcastReceiver exitReceiver = new BroadcastReceiver() {
