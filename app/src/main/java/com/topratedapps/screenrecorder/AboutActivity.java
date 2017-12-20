@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) topratedapps 2017.
+ */
+
 package com.topratedapps.screenrecorder;
 
 import android.os.Bundle;

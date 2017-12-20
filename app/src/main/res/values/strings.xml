@@ -1,3 +1,7 @@
+<!--
+  ~ Copyright (c) topratedapps 2017.
+  -->
+
 <resources>
     <string name="app_name" translatable="false">Screen Recorder</string>
     <string name="preference_resolution_title">Resolution</string>
