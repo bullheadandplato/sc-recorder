@@ -68,10 +68,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by vijai on 12-10-2016.
- */
-//TODO: Update icons for notifcation
 public class RecorderService extends Service implements ShakeEventManager.ShakeListener {
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static int WIDTH, HEIGHT, FPS, DENSITY_DPI;
@@ -128,14 +124,10 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        //return super.onStartCommand(intent, flags, startId);
-        //Find the action to perform from intent
         switch (intent.getAction()) {
             case Const.SCREEN_RECORDING_START:
 
-                /* Wish MediaRecorder had a method isRecording() or similar. But, we are forced to
-                 * manage the state ourself. Let's hope the request is honored.
-                  * Request: https://code.google.com/p/android/issues/detail?id=800 */
+
                 if (!isRecording) {
                     //Get values from Default SharedPreferences
                     getValues();
@@ -149,7 +141,6 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
                     boolean isShakeGestureActive = prefs.getBoolean(getString(R.string.preference_shake_gesture_key), false);
 
                     if (isShakeGestureActive) {
-                        //SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
                         mShakeDetector = new ShakeEventManager(this);
                         mShakeDetector.init(this);
 
@@ -199,7 +190,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
                 //Send a broadcast receiver to the plugin app to disable show touches since the recording is stopped
                 if (showTouches) {
                     Intent TouchIntent = new Intent();
-                    TouchIntent.setAction("com.orpheusdroid.screenrecorder.DISABLETOUCH");
+                    TouchIntent.setAction("com.topratedapps.screenrecorder.DISABLETOUCH");
                     TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
                     sendBroadcast(TouchIntent);
                 }
@@ -245,7 +236,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
         //Send a broadcast receiver to the plugin app to disable show touches since the recording is paused
         if (showTouches) {
             Intent TouchIntent = new Intent();
-            TouchIntent.setAction("com.orpheusdroid.screenrecorder.DISABLETOUCH");
+            TouchIntent.setAction("com.topratedapps.screenrecorder.DISABLETOUCH");
             TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
             sendBroadcast(TouchIntent);
         }
@@ -276,7 +267,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
         if (showTouches) {
             if (showTouches) {
                 Intent TouchIntent = new Intent();
-                TouchIntent.setAction("com.orpheusdroid.screenrecorder.SHOWTOUCH");
+                TouchIntent.setAction("com.topratedapps.screenrecorder.SHOWTOUCH");
                 TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
                 sendBroadcast(TouchIntent);
             }
@@ -318,7 +309,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
             //Send a broadcast receiver to the plugin app to enable show touches since the recording is started
             if (showTouches) {
                 Intent TouchIntent = new Intent();
-                TouchIntent.setAction("com.orpheusdroid.screenrecorder.SHOWTOUCH");
+                TouchIntent.setAction("com.topratedapps.screenrecorder.SHOWTOUCH");
                 TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
                 sendBroadcast(TouchIntent);
             }

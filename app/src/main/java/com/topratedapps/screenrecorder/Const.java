@@ -29,11 +29,11 @@ public class Const {
     static final int SCREEN_RECORD_REQUEST_CODE = 1003;
     public static final int VIDEO_EDIT_REQUEST_CODE = 1004;
     public static final int VIDEO_EDIT_RESULT_CODE = 1005;
-    static final String SCREEN_RECORDING_START = "com.orpheusdroid.screenrecorder.services.action.startrecording";
-    static final String SCREEN_RECORDING_PAUSE = "com.orpheusdroid.screenrecorder.services.action.pauserecording";
-    static final String SCREEN_RECORDING_RESUME = "com.orpheusdroid.screenrecorder.services.action.resumerecording";
-    static final String SCREEN_RECORDING_STOP = "com.orpheusdroid.screenrecorder.services.action.stoprecording";
-    static final String SCREEN_RECORDING_DESTORY_SHAKE_GESTURE = "com.orpheusdroid.screenrecorder.services.action.destoryshakegesture";
+    static final String SCREEN_RECORDING_START = "com.topratedapps.screenrecorder.services.action.startrecording";
+    static final String SCREEN_RECORDING_PAUSE = "com.topratedapps.screenrecorder.services.action.pauserecording";
+    static final String SCREEN_RECORDING_RESUME = "com.topratedapps.screenrecorder.services.action.resumerecording";
+    static final String SCREEN_RECORDING_STOP = "com.topratedapps.screenrecorder.services.action.stoprecording";
+    static final String SCREEN_RECORDING_DESTORY_SHAKE_GESTURE = "com.topratedapps.screenrecorder.services.action.destoryshakegesture";
     static final int SCREEN_RECORDER_NOTIFICATION_ID = 5001;
     static final int SCREEN_RECORDER_SHARE_NOTIFICATION_ID = 5002;
     static final int SCREEN_RECORDER_WAITING_FOR_SHAKE_NOTIFICATION_ID = 5003;

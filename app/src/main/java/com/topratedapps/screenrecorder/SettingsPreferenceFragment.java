@@ -263,9 +263,9 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         try {
-                            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.orpheusdroid.screencamplugin")));
+                            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.topratedapps.screencamplugin")));
                         } catch (android.content.ActivityNotFoundException e) { // if there is no Google Play on device
-                            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.orpheusdroid.screencamplugin")));
+                            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.topratedapps.screencamplugin")));
                         }
                     }
                 })
@@ -281,7 +281,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
     private boolean hasPluginInstalled() {
         PackageManager pm = getActivity().getPackageManager();
         try {
-            pm.getPackageInfo("com.orpheusdroid.screencamplugin", PackageManager.GET_META_DATA);
+            pm.getPackageInfo("com.topratedapps.screencamplugin", PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             Log.d(Const.TAG, "Plugin not installed");
             return false;
