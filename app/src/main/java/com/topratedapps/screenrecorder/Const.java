@@ -60,6 +60,8 @@ public class Const {
     static final String PREFS_DARK_THEME = "dark_theme";
     static final String PREFS_BLACK_THEME = "black_theme";
 
+    static final String SKU_TARGET_ENABLE = "sku_target";
+
     public enum RecordingState {
         RECORDING, PAUSED, STOPPED
     }

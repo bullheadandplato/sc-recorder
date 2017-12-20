@@ -23,7 +23,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -47,20 +46,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Created by vijai on 11-10-2016.
- */
+
 
 public class SettingsPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener
-        , PermissionResultListener, OnDirectorySelectedListerner, MainActivity.AnalyticsSettingsListerner {
+        , PermissionResultListener, OnDirectorySelectedListerner {
 
     SharedPreferences prefs;
     private CheckBoxPreference recaudio;
     private CheckBoxPreference floatingControl;
-    private CheckBoxPreference crashReporting;
-    private CheckBoxPreference usageStats;
+    private CheckBoxPreference targetApp;
     private FolderChooser dirChooser;
     private MainActivity activity;
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -75,7 +72,6 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         //init permission listener callback
         setPermissionListener();
 
-        setAnalyticsPermissionListerner();
 
         //Get Default save location from shared preference
         String defaultSaveLoc = (new File(Environment
@@ -91,9 +87,8 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         EditTextPreference filenamePrefix = (EditTextPreference) findPreference(getString(R.string.fileprefix_key));
         dirChooser = (FolderChooser) findPreference(getString(R.string.savelocation_key));
         floatingControl = (CheckBoxPreference) findPreference(getString(R.string.preference_floating_control_key));
-        CheckBoxPreference touchPointer = (CheckBoxPreference) findPreference("touch_pointer");
-        crashReporting = (CheckBoxPreference) findPreference(getString(R.string.preference_crash_reporting_key));
-        usageStats = (CheckBoxPreference) findPreference(getString(R.string.preference_anonymous_statistics_key));
+        targetApp = (CheckBoxPreference) findPreference(getString(R.string.preference_enable_target_app_key));
+
         //Set previously chosen directory as initial directory
         dirChooser.setCurrentDir(getValue(getString(R.string.savelocation_key), defaultSaveLoc));
 
@@ -117,9 +112,8 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         if (floatingControl.isChecked())
             requestSystemWindowsPermission();
 
-        if (touchPointer.isChecked()) {
-            if (!hasPluginInstalled())
-                touchPointer.setChecked(false);
+        if (hasPurchased()) {
+            targetApp.setChecked(true);
         }
 
         //set callback for directory change
@@ -162,12 +156,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         }
     }
 
-    private void setAnalyticsPermissionListerner() {
-        if (getActivity() != null && getActivity() instanceof MainActivity) {
-            activity = (MainActivity) getActivity();
-            activity.setAnalyticsSettingsListerner(this);
-        }
-    }
+
 
     //method to return string from SharedPreferences
     private String getValue(String key, String defVal) {
@@ -232,22 +221,13 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
             case R.string.preference_floating_control_title:
                 requestSystemWindowsPermission();
                 break;
-            case R.string.preference_show_touch_title:
-                CheckBoxPreference showTouchCB = (CheckBoxPreference) pref;
-                if (showTouchCB.isChecked() && !hasPluginInstalled()) {
-                    showTouchCB.setChecked(false);
-                    showDownloadAlert();
+            case R.string.preference_enable_target_app_title:
+                if (!hasPurchased()) {
+                    targetApp.setChecked(false);
+                    showPurchaseAlert();
+                } else {
+                    targetApp.setChecked(true);
                 }
-                break;
-            case R.string.preference_crash_reporting_title:
-                CheckBoxPreference crashReporting = (CheckBoxPreference) pref;
-                CheckBoxPreference anonymousStats = (CheckBoxPreference) findPreference(getString(R.string.preference_anonymous_statistics_key));
-                if (!crashReporting.isChecked())
-                    anonymousStats.setChecked(false);
-                startAnalytics();
-                break;
-            case R.string.preference_anonymous_statistics_title:
-                startAnalytics();
                 break;
             case R.string.preference_theme_title:
                 activity.recreate();
@@ -255,18 +235,15 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         }
     }
 
-    private void showDownloadAlert() {
+
+    private void showPurchaseAlert() {
         new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.alert_plugin_not_found_title)
-                .setMessage(R.string.alert_plugin_not_found_message)
+                .setTitle(R.string.alert_target_not_purchased_title)
+                .setMessage(R.string.alert_target_not_purchased_message)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        try {
-                            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.topratedapps.screencamplugin")));
-                        } catch (android.content.ActivityNotFoundException e) { // if there is no Google Play on device
-                            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.topratedapps.screencamplugin")));
-                        }
+                        launchBilling();
                     }
                 })
                 .setNeutralButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -278,15 +255,14 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
                 .create().show();
     }
 
-    private boolean hasPluginInstalled() {
-        PackageManager pm = getActivity().getPackageManager();
-        try {
-            pm.getPackageInfo("com.topratedapps.screencamplugin", PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d(Const.TAG, "Plugin not installed");
-            return false;
+    private void launchBilling() {
+        if (activity != null) {
+            activity.makePurchase(Const.SKU_TARGET_ENABLE);
         }
-        return true;
+    }
+
+    private boolean hasPurchased() {
+        return activity != null && activity.isPurchasedTarget();
     }
 
     //Method to concat file prefix with dateTime format
@@ -390,21 +366,4 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         }
     }
 
-    @Override
-    public void updateAnalyticsSettings(Const.analytics analytics) {
-        switch (analytics) {
-            case CRASHREPORTING:
-                crashReporting.setChecked(true);
-                break;
-            case USAGESTATS:
-                usageStats.setChecked(true);
-                break;
-        }
-    }
-
-    private void startAnalytics() {
-        if (getActivity() != null && getActivity() instanceof MainActivity) {
-            ((MainActivity) getActivity()).setupAnalytics();
-        }
-    }
 }

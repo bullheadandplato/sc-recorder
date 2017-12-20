@@ -37,6 +37,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -50,14 +51,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import ly.count.android.sdk.Countly;
-import ly.count.android.sdk.DeviceId;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener {
 
     private PermissionResultListener mPermissionResultListener;
     private AnalyticsSettingsListerner analyticsSettingsListerner;
@@ -67,30 +73,31 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private SharedPreferences prefs;
+    private BillingClient mBillingClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         String theme = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(getString(R.string.preference_theme_key), Const.PREFS_LIGHT_THEME);
-        int popupOverlayTheme = 0;
         int toolBarColor = 0;
         switch (theme) {
             case Const.PREFS_DARK_THEME:
                 setTheme(R.style.AppTheme_Dark_NoActionBar);
-                popupOverlayTheme = R.style.AppTheme_PopupOverlay_Dark;
                 toolBarColor = ContextCompat.getColor(this, R.color.colorPrimary_dark);
                 break;
             case Const.PREFS_BLACK_THEME:
                 setTheme(R.style.AppTheme_Black_NoActionBar);
-                popupOverlayTheme = R.style.AppTheme_PopupOverlay_Black;
                 toolBarColor = ContextCompat.getColor(this, R.color.colorPrimary_black);
                 break;
         }
 
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //initBilling
+        setupBilling();
 
         viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -145,12 +152,59 @@ public class MainActivity extends AppCompatActivity {
         /* Enable analytics only for release builds */
         if (!BuildConfig.DEBUG) {
             Log.d(Const.TAG, "Is a release build. Setting up analytics");
-            requestAnalyticsPermission();
             setupAnalytics();
         } else {
             Log.d(Const.TAG, "Debug build. Analytics is disabled");
         }
 
+    }
+
+    private boolean billingReady = false;
+
+    private void setupBilling() {
+        mBillingClient = BillingClient.newBuilder(this).setListener(this).build();
+        mBillingClient.startConnection(new BillingClientStateListener() {
+            @Override
+            public void onBillingSetupFinished(int responseCode) {
+                billingReady = true;
+                queryPurchase();
+            }
+
+            @Override
+            public void onBillingServiceDisconnected() {
+                billingReady = false;
+            }
+        });
+
+    }
+
+    private boolean purchasedTouch = false;
+
+    private void queryPurchase() {
+        Purchase.PurchasesResult result = mBillingClient.queryPurchases(Const.SKU_TARGET_ENABLE);
+        if (result != null && result.getPurchasesList() != null && result.getPurchasesList().size() > 0) {
+            for (Purchase purchase : result.getPurchasesList()) {
+                if (Const.SKU_TARGET_ENABLE.equals(purchase.getSku())) {
+                    purchasedTouch = true;
+                }
+            }
+        }
+    }
+
+    public void makePurchase(String skuId) {
+        if (billingReady) {
+            BillingFlowParams params = BillingFlowParams.newBuilder()
+                    .setSku(skuId)
+                    .setType(BillingClient.SkuType.INAPP)
+                    .build();
+            mBillingClient.launchBillingFlow(this, params);
+        } else {
+            Toast.makeText(this, "Unable to make purchase.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public boolean isPurchasedTarget() {
+        return purchasedTouch;
     }
 
     private void setTabIcons(TabLayout tabLayout) {
@@ -159,27 +213,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setupAnalytics() {
-        if (!prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false) &&
-                !prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false)) {
-            Log.d(Const.TAG, "Analytics disabled by user");
-            return;
-        }
-        Countly.sharedInstance().init(this, Const.ANALYTICS_URL, Const.ANALYTICS_API_KEY,
-                null, DeviceId.Type.OPEN_UDID, 3, null, null, null, null);
-        Countly.sharedInstance().setHttpPostForced(true);
-        Countly.sharedInstance().enableParameterTamperingProtection(getPackageName());
-
-        if (prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false)) {
-            Countly.sharedInstance().enableCrashReporting();
-            Log.d(Const.TAG, "Enabling crash reporting");
-        }
-        if (prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false)) {
-            Countly.sharedInstance().setStarRatingDisableAskingForEachAppVersion(false);
-            Countly.sharedInstance().setViewTracking(true);
-            Countly.sharedInstance().setIfStarRatingShownAutomatically(true);
-            Log.d(Const.TAG, "Enabling countly statistics");
-        }
-        Countly.sharedInstance().onStart(this);
+        //add fabric here
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -361,53 +395,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void requestAnalyticsPermission() {
-        if (!prefs.getBoolean(Const.PREFS_REQUEST_ANALYTICS_PERMISSION, true))
-            return;
-
-        new AlertDialog.Builder(this)
-                .setTitle("Allow anonymous analytics")
-                .setMessage("Do you want to allow anonymous crash reporting and usage metrics now?" +
-                        "\nRead the privacy policy to know more on what data are collected")
-                .setPositiveButton("Enable analytics", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        analyticsSettingsListerner.updateAnalyticsSettings(Const.analytics.CRASHREPORTING);
-                        analyticsSettingsListerner.updateAnalyticsSettings(Const.analytics.USAGESTATS);
-                        prefs.edit()
-                                .putBoolean(Const.PREFS_REQUEST_ANALYTICS_PERMISSION, false)
-                                .apply();
-                    }
-                })
-                .setNeutralButton("Enable Crash reporting only", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        analyticsSettingsListerner.updateAnalyticsSettings(Const.analytics.CRASHREPORTING);
-                        prefs.edit()
-                                .putBoolean(Const.PREFS_REQUEST_ANALYTICS_PERMISSION, false)
-                                .apply();
-                    }
-                })
-                .setNegativeButton("Disable everything", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        prefs.edit()
-                                .putBoolean(Const.PREFS_REQUEST_ANALYTICS_PERMISSION, false)
-                                .apply();
-                    }
-                })
-                .setCancelable(false)
-                .create().show();
-    }
-
     //Set the callback interface for permission result from SettingsPreferenceFragment
     public void setPermissionResultListener(PermissionResultListener mPermissionResultListener) {
         this.mPermissionResultListener = mPermissionResultListener;
     }
 
-    public void setAnalyticsSettingsListerner(AnalyticsSettingsListerner analyticsSettingsListerner) {
-        this.analyticsSettingsListerner = analyticsSettingsListerner;
-    }
+
 
     @Override
     protected void onStart() {
@@ -442,6 +435,16 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> purchases) {
+        if (responseCode == BillingClient.BillingResponse.OK) {
+            if (purchases != null && purchases.size() != 0) {
+                purchasedTouch = true;
+                Toast.makeText(MainActivity.this, "Thanks for purchasing your item.", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
