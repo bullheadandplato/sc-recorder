@@ -44,7 +44,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -92,20 +91,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setBackgroundColor(toolBarColor);
-
-        if (popupOverlayTheme != 0)
-            toolbar.setPopupTheme(popupOverlayTheme);
-
-        setSupportActionBar(toolbar);
 
         viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+        //set tab layout icons
+        setTabIcons(tabLayout);
         tabLayout.setBackgroundColor(toolBarColor);
+
+
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -157,6 +153,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void setTabIcons(TabLayout tabLayout) {
+            tabLayout.getTabAt(0).setIcon(R.drawable.ic_videocam_black_24dp);
+            tabLayout.getTabAt(1).setIcon(R.drawable.ic_settings_applications_black_24dp);
+    }
+
     public void setupAnalytics() {
         if (!prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false) &&
                 !prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false)) {
@@ -183,8 +184,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getFragmentManager());
-        adapter.addFragment(new SettingsPreferenceFragment(), getString(R.string.tab_settings_title));
         adapter.addFragment(new VideosListFragment(), getString(R.string.tab_videos_title));
+        adapter.addFragment(new SettingsPreferenceFragment(), getString(R.string.tab_settings_title));
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -195,10 +196,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 switch (position) {
-                    case 0:
+                    case 1:
                         fab.show();
                         break;
-                    case 1:
+                    case 0:
                         fab.hide();
                         break;
                 }
@@ -473,10 +474,6 @@ public class MainActivity extends AppCompatActivity {
             mFragmentTitleList.add(title);
         }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
     }
 
     public interface AnalyticsSettingsListerner {

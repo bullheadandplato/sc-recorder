@@ -55,9 +55,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by vijai on 06-11-2016.
- */
+
 
 public class VideosListFragment extends Fragment implements PermissionResultListener, SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView videoRV;
@@ -100,7 +98,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             Log.d(Const.TAG, "Videos fragment is visible load the videos");
-            checkPermission();
+     //       checkPermission();
         }
     }
 
