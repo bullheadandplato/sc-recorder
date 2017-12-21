@@ -38,6 +38,7 @@ public class FloatingControlService extends Service {
     private boolean isRecording;
     private Intent data;
     private int result;
+    private boolean stopped = false;
 
     @Override
     public void onCreate() {
@@ -56,11 +57,15 @@ public class FloatingControlService extends Service {
         result = intent.getIntExtra(Const.RECORDER_INTENT_RESULT, Activity.RESULT_OK);
 
 
-        showRunningNotification();
         registerReceiver(exitReceiver, new IntentFilter(EXIT_INTENT_FILTER));
         registerReceiver(startCapture, new IntentFilter(START_CAPTURE_INTENT));
         registerReceiver(stopCapture, new IntentFilter(STOP_CAPTURE_FILTER));
-
+        if (startRecordingImmediate) {
+            isRecording = true;
+            startScreenRecording();
+            startRecordingImmediate = false;
+        }
+        showRunningNotification();
         return START_NOT_STICKY;
     }
 
@@ -89,7 +94,6 @@ public class FloatingControlService extends Service {
         Intent stopIntent = new Intent(this, RecorderService.class);
         stopIntent.setAction(Const.SCREEN_RECORDING_STOP);
         startService(stopIntent);
-        stop();
     }
 
     private void showRunningNotification() {
@@ -147,12 +151,23 @@ public class FloatingControlService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             stopScreenSharing();
+            showRunningNotification();
+            stopped = true;
 
         }
     };
+    private boolean startRecordingImmediate = false;
     private BroadcastReceiver startCapture = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (stopped) {
+                stopped = false;
+                Intent intent1 = new Intent(FloatingControlService.this, OverlyPermissionActivity.class);
+                intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startRecordingImmediate = true;
+                startActivity(intent1);
+                return;
+            }
             startScreenRecording();
             isRecording = true;
             showRunningNotification();
@@ -188,7 +203,6 @@ public class FloatingControlService extends Service {
         try {
             if (isRecording) {
                 stopScreenSharing();
-                return;
             }
             unregisterReceiver(exitReceiver);
             unregisterReceiver(stopCapture);
