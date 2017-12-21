@@ -17,7 +17,8 @@ import com.topratedapps.screenrecorder.R;
 import java.util.ArrayList;
 
 /**
- * Created by vijai on 08-12-2017.
+ * Created by bullhead on 08-12-2017.
+ *
  */
 
 public class AppsListFragmentAdapter extends RecyclerView.Adapter<AppsListFragmentAdapter.SimpleViewHolder> {

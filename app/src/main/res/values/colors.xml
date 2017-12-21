@@ -41,4 +41,8 @@
     <color name="appBackground_black">@android:color/black</color>
     <color name="dialog_background_black">#101010</color>
     <color name="actionMode_background_black">#000000</color>
+    <color name="accent_pressed">#ffa72600</color>
+    <color name="gray_normal">#ff757575</color>
+    <color name="gray_pressed">#ff616161</color>
+    <color name="accent_normal">#ffe73c35</color>
 </resources>

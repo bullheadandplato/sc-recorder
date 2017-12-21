@@ -4,226 +4,41 @@
 
 package com.topratedapps.screenrecorder;
 
-import android.animation.Animator;
-import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.PixelFormat;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
-import android.os.Vibrator;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 
 import com.topratedapps.screenrecorder.Const.RecordingState;
+import com.topratedapps.screenrecorder.widgets.OverlayView;
 
 /**
- * Created by vijai on 05-11-2016.
+ * Created by bullhead on 05-11-2017.
+ *
  */
 
-public class FloatingControlService extends Service implements View.OnClickListener {
+public class FloatingControlService extends Service {
 
     private WindowManager windowManager;
-    private LinearLayout floatingControls;
-    private View controls;
-    private ImageButton pauseIB;
-    private ImageButton resumeIB;
+    private OverlayView overlayView;
     private IBinder binder = new ServiceBinder();
+    private OverlayView.Listener listener;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
-        //Inflate the layout using LayoutInflater
-        LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        floatingControls = (LinearLayout) li.inflate(R.layout.layout_floating_controls, null);
-        controls = floatingControls.findViewById(R.id.controls);
 
-        //Initialize imageButtons
-        ImageButton stopIB = controls.findViewById(R.id.stop);
-        pauseIB = controls.findViewById(R.id.pause);
-        resumeIB = controls.findViewById(R.id.resume);
-        resumeIB.setEnabled(false);
-
-        stopIB.setOnClickListener(this);
-
-        //Get floating control icon size from sharedpreference
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-
-        //Pause/Resume doesnt work below SDK version 24. Remove them
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            pauseIB.setVisibility(View.GONE);
-            resumeIB.setVisibility(View.GONE);
-            controls.findViewById(R.id.divider1).setVisibility(View.GONE);
-            controls.findViewById(R.id.divider2).setVisibility(View.GONE);
-        } else {
-            pauseIB.setOnClickListener(this);
-            resumeIB.setOnClickListener(this);
-        }
-
-        //Set layout params to display the controls over any screen.
-        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                dpToPx(pref.getInt(getString(R.string.preference_floating_control_size_key), 100)),
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
-
-        // From API26, TYPE_PHONE depricated. Use TYPE_APPLICATION_OVERLAY for O
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            params.type = WindowManager.LayoutParams.TYPE_PHONE;
-
-        //Initial position of the floating controls
-        params.gravity = Gravity.TOP | Gravity.START;
-        params.x = 0;
-        params.y = 100;
-
-        //Add the controls view to windowmanager
-        windowManager.addView(floatingControls, params);
-
-        //Add touch listerner to floating controls view to move/close/expand the controls
-        try {
-            floatingControls.setOnTouchListener(new View.OnTouchListener() {
-                private WindowManager.LayoutParams paramsF = params;
-                private int initialX;
-                private int initialY;
-                private float initialTouchX;
-                private float initialTouchY;
-                boolean isMoving = false;
-
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            isMoving = false;
-                            initialX = paramsF.x;
-                            initialY = paramsF.y;
-                            initialTouchX = event.getRawX();
-                            initialTouchY = event.getRawY();
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            if (!isMoving) {
-                                if (controls.getVisibility() == View.INVISIBLE) {
-                                    expandFloatingControls();
-                                } else {
-                                    collapseFloatingControls();
-                                }
-                            }
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            int xDiff = (int) (event.getRawX() - initialTouchX);
-                            int yDiff = (int) (event.getRawY() - initialTouchY);
-                            paramsF.x = initialX + xDiff;
-                            paramsF.y = initialY + yDiff;
-                            /* Set an offset of 10 pixels to determine controls moving. Else, normal touches
-                             * could react as moving the control window around */
-                            if (Math.abs(xDiff) > 10 || Math.abs(yDiff) > 10)
-                                isMoving = true;
-                            windowManager.updateViewLayout(floatingControls, paramsF);
-                            break;
-                    }
-                    return false;
-                }
-            });
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
+        showOverlay();
         return START_STICKY;
     }
 
-    //Expand the floating window on touch
-    private void expandFloatingControls() {
-        controls.setVisibility(View.VISIBLE);
-
-        final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        controls.measure(widthSpec, heightSpec);
-
-        //Animate the expanding floating window
-        ValueAnimator mAnimator = slideAnimator(0, controls.getMeasuredWidth());
-        mAnimator.start();
-    }
-
-    private void collapseFloatingControls() {
-        int finalHeight = controls.getWidth();
-
-        ValueAnimator mAnimator = slideAnimator(finalHeight, 0);
-
-        mAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                //Height=0, but it set visibility to INVISIBLE at the end of animation
-                controls.setVisibility(View.INVISIBLE);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-
-        });
-        mAnimator.start();
-    }
-
-    private ValueAnimator slideAnimator(int start, int end) {
-
-        ValueAnimator animator = ValueAnimator.ofInt(start, end);
-
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                //Update width
-                int value = (Integer) valueAnimator.getAnimatedValue();
-                ViewGroup.LayoutParams layoutParams = controls.getLayoutParams();
-                layoutParams.width = value;
-                controls.setLayoutParams(layoutParams);
-            }
-        });
-        return animator;
-    }
-
-    //Onclick override to handle button clicks
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.stop:
-                stopScreenSharing();
-                break;
-            case R.id.pause:
-                pauseScreenRecording();
-                break;
-            case R.id.resume:
-                resumeScreenRecording();
-                break;
-        }
-
-        //Provide an haptic feedback on button press
-        Vibrator vibrate = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
-        vibrate.vibrate(100);
-    }
 
     /* Set resume intent and start the recording service
      * NOTE: A service can be started only once. Any subsequent startService only passes the intent
@@ -248,19 +63,10 @@ public class FloatingControlService extends Service implements View.OnClickListe
         startService(stopIntent);
     }
 
-    //Enable/disable pause/resume ImageButton depending on the current recording state
-    public void setRecordingState(RecordingState state) {
-        switch (state) {
-            case PAUSED:
-                pauseIB.setEnabled(false);
-                resumeIB.setEnabled(true);
-                break;
-            case RECORDING:
-                pauseIB.setEnabled(true);
-                resumeIB.setEnabled(false);
-                break;
-        }
+    public void setRecordingState(RecordingState recordingState) {
+        //this.recordingState = recordingState;
     }
+
 
     //Binder class for binding to recording service
     public class ServiceBinder extends Binder {
@@ -271,7 +77,6 @@ public class FloatingControlService extends Service implements View.OnClickListe
 
     @Override
     public void onDestroy() {
-        if (floatingControls != null) windowManager.removeView(floatingControls);
         super.onDestroy();
     }
 
@@ -295,5 +100,51 @@ public class FloatingControlService extends Service implements View.OnClickListe
     private int dpToPx(int dp) {
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    void showOverlay() {
+
+        listener = new OverlayView.Listener() {
+            @Override
+            public void onCancel() {
+                cancelOverlay();
+            }
+
+            @Override
+            public void onPrepare() {
+                listener.onPrepare();
+            }
+
+            @Override
+            public void onStart() {
+                resumeScreenRecording();
+            }
+
+            @Override
+            public void onStop() {
+                stopScreenSharing();
+            }
+
+            @Override
+            public void onResize() {
+                windowManager.updateViewLayout(overlayView, overlayView.getLayoutParams());
+            }
+        };
+        overlayView = OverlayView.create(this, listener, true);
+        windowManager.addView(overlayView, OverlayView.createLayoutParams(this));
+
+    }
+
+    private void hideOverlay() {
+        if (overlayView != null) {
+            windowManager.removeView(overlayView);
+            overlayView = null;
+
+        }
+    }
+
+    private void cancelOverlay() {
+        hideOverlay();
+
     }
 }

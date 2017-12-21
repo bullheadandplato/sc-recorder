@@ -5,7 +5,8 @@
 package com.topratedapps.screenrecorder;
 
 /**
- * Created by vijai on 11-10-2016.
+ * Created by bullhead on 11-10-2017.
+ *
  */
 //Interface for permission result callback
 interface PermissionResultListener {

@@ -8,7 +8,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 
 /**
- * Created by vijai on 08-12-2017.
+ * Created by bullhead on 08-12-2017.
+ *
  */
 
 public class Apps implements Comparable<Apps> {

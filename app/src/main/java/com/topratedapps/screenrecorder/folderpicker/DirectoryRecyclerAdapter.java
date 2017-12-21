@@ -20,7 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * Created by vijai on 01-12-2016.
+ * Created by bullhead on 01-12-2017.
  */
 
 class DirectoryRecyclerAdapter extends RecyclerView.Adapter<DirectoryRecyclerAdapter.ItemViewHolder> {

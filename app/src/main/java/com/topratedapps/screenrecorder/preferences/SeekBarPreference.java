@@ -20,7 +20,8 @@ import com.topratedapps.screenrecorder.Const;
 import com.topratedapps.screenrecorder.R;
 
 /**
- * Created by vijai on 04-04-2017.
+ * Created by bullhead on 16-12-2017.
+ *
  */
 
 public class SeekBarPreference extends DialogPreference implements SeekBar.OnSeekBarChangeListener {

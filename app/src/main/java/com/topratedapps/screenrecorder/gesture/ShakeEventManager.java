@@ -14,7 +14,8 @@ import android.util.Log;
 import com.topratedapps.screenrecorder.Const;
 
 /**
- * Created by vijai on 08-10-2017.
+ * Created by bullhead on 08-12-2017.
+ *
  */
 
 public class ShakeEventManager implements SensorEventListener {

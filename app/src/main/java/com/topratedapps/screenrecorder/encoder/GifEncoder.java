@@ -5,7 +5,8 @@
 package com.topratedapps.screenrecorder.encoder;
 
 /**
- * Created by vijai on 31-08-2017.
+ * Created by bullhead on 12-12-2017.
+ *
  */
 
 import android.graphics.Bitmap;

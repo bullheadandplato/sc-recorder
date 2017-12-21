@@ -10,7 +10,7 @@ import android.os.Parcelable;
 import android.preference.Preference;
 
 /**
- * Created by vijai on 03-12-2016.
+ * Created by bullhead on 03-12-2017.
  */
 
 public class SavedStateHandler extends Preference.BaseSavedState {

@@ -5,7 +5,8 @@
 package com.topratedapps.screenrecorder;
 
 /**
- * Created by vijai on 12-10-2016.
+ * Created by bullhead on 12-10-2017.
+ *
  */
 
 // POJO class for bunch of statics used across the app

@@ -60,5 +60,6 @@ dependencies {
     implementation 'life.knowledge4:k4l-video-trimmer:1.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.billingclient:billing:1.0'
-
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }

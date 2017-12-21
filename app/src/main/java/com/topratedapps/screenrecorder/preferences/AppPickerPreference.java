@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by vijai on 08-12-2017.
+ * Created by bullhead on 08-12-2017.
  */
 
 public class AppPickerPreference extends DialogPreference implements AppsListFragmentAdapter.OnItemClicked {

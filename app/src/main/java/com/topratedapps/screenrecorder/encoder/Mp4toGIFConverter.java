@@ -19,12 +19,12 @@ import com.topratedapps.screenrecorder.Const;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Created by vijai on 31-08-2017.
+ * Created by bullhead on 08-12-2017.
+ *
  */
 
 public class Mp4toGIFConverter {
@@ -90,9 +90,6 @@ public class Mp4toGIFConverter {
 
 
                 return (outFile.getAbsolutePath() + " Saved");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return e.getMessage();
             } catch (IOException e) {
                 e.printStackTrace();
                 return e.getMessage();
@@ -118,8 +115,6 @@ public class Mp4toGIFConverter {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            //bar.setProgress(values[0]);
-            //updateFrame();
             dialog.setProgress(values[0]);
 
             Log.d(Const.TAG, "Gif save progress: " + values[0]);
@@ -132,7 +127,6 @@ public class Mp4toGIFConverter {
             animatedGifEncoder.setDelay(1000);
             animatedGifEncoder.setRepeat(0);
             animatedGifEncoder.setQuality(15);
-            //animatedGifEncoder.setSize(0,0);
             animatedGifEncoder.setFrameRate(20.0f);
 
             Bitmap bmFrame;
