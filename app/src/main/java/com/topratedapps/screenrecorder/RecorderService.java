@@ -387,7 +387,6 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
 
         Intent recordStopIntent = new Intent(this, RecorderService.class);
         recordStopIntent.setAction(Const.SCREEN_RECORDING_STOP);
-        PendingIntent precordStopIntent = PendingIntent.getService(this, 0, recordStopIntent, 0);
 
         Intent UIIntent = new Intent(this, MainActivity.class);
         PendingIntent notificationContentIntent = PendingIntent.getActivity(this, 0, UIIntent, 0);
