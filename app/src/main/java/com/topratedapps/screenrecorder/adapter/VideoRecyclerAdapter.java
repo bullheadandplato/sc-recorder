@@ -257,20 +257,20 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                     }
                 });
 
-                // LongClickListener to enable multiselect
-                itemViewHolder.videoCard.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        if (!isMultiSelect) {
-                            setMultiSelect(true);
-                            video.setSelected(true);
-                            count++;
-                            mActionMode.setTitle("" + count);
-                            notifyDataSetChanged();
-                        }
-                        return true;
-                    }
-                });
+//                // LongClickListener to enable multiselect
+//                itemViewHolder.videoCard.setOnLongClickListener(new View.OnLongClickListener() {
+//                    @Override
+//                    public boolean onLongClick(View view) {
+//                        if (!isMultiSelect) {
+//                            setMultiSelect(true);
+//                            video.setSelected(true);
+//                            count++;
+//                            mActionMode.setTitle("" + count);
+//                            notifyDataSetChanged();
+//                        }
+//                        return true;
+//                    }
+//                });
 
                 break;
             case VIEW_SECTION:
@@ -348,6 +348,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
      */
     private void deleteVideos(ArrayList<Integer> positions) {
         File video;
+
         for (int position : positions) {
             video = new File(videos.get(position).getFile().getPath());
             if (video.delete()) {
