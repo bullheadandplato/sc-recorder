@@ -60,8 +60,8 @@
     <string name="share_intent_notification_title">Share recorded video</string>
     <string name="share_intent_notification_content">click to share the recorded video</string>
     <string name="share_intent_notification_action_text">Share</string>
-    <string name="preference_floating_control_title">Use Floating Controls</string>
-    <string name="preference_floating_control_summary">Enable/Disable floating controls which draws over every screen</string>
+    <string name="preference_floating_control_title">Always keep running</string>
+    <string name="preference_floating_control_summary">Keep running in the background</string>
     <string name="preference_floating_control_key" translatable="false">floating_controls</string>
     <string name="tab_settings_title">Settings</string>
     <string name="tab_videos_title">Videos</string>
@@ -124,4 +124,5 @@
     <string name="countdown_one">1…</string>
     <string name="countdown_two">2…</string>
     <string name="countdown_three">3…</string>
+    <string name="stop">Stop</string>
 </resources>

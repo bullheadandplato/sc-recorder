@@ -65,6 +65,10 @@
             android:name="com.topratedapps.screenrecorder.PrivacyPolicy"
             android:label="Privacy Policy" />
         <activity android:name="com.topratedapps.screenrecorder.EditVideoActivity" />
+        <activity
+            android:name=".OverlyPermissionActivity"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 
 </manifest>

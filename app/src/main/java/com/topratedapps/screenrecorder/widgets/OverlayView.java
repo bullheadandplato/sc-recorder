@@ -157,7 +157,7 @@ public final class OverlayView extends FrameLayout {
     }
 
     @OnClick(R.id.record_overlay_cancel)
-    void onCancelClicked() {
+    public void onCancelClicked() {
         animate().translationX(animationWidth)
                 .setDuration(DURATION_ENTER_EXIT)
                 .setInterpolator(new AccelerateInterpolator())
@@ -172,6 +172,7 @@ public final class OverlayView extends FrameLayout {
     @OnClick(R.id.record_overlay_start)
     void onStartClicked() {
         recordingView.setVisibility(VISIBLE);
+        recordingView.setAlpha(1f);
         int centerX = (int) (startView.getX() + (startView.getWidth() / 2));
         int centerY = (int) (startView.getY() + (startView.getHeight() / 2));
         Animator reveal = createCircularReveal(recordingView, centerX, centerY, 0, getWidth() / 2f);
@@ -201,6 +202,8 @@ public final class OverlayView extends FrameLayout {
         stopView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
+                stopView.setVisibility(INVISIBLE);
+                buttonsView.setVisibility(VISIBLE);
                 listener.onStop();
             }
         });

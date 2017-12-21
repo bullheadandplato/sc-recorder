@@ -10,7 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.CheckBoxPreference;
@@ -267,10 +266,12 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
     }
 
     private void requestSystemWindowsPermission() {
-        if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            activity.requestSystemWindowsPermission();
-        } else if (getActivity() != null) {
-            ((MainActivity) getActivity()).startOverly();
+        if (activity != null) {
+            if (floatingControl.isChecked()) {
+                activity.startOverly();
+            } else {
+                activity.exitOverly();
+            }
         }
     }
 

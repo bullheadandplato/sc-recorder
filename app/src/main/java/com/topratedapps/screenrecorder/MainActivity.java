@@ -17,7 +17,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -52,6 +51,7 @@ import ly.count.android.sdk.Countly;
 
 public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener {
 
+    private static final int REQ_CODE_OVERLAY = 909;
     private PermissionResultListener mPermissionResultListener;
     private MediaProjection mMediaProjection;
     private MediaProjectionManager mProjectionManager;
@@ -313,22 +313,11 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         return true;
     }
 
-    //Permission on api below 23 are granted by default
-    @TargetApi(23)
-    public void requestSystemWindowsPermission() {
-        if (!Settings.canDrawOverlays(this)) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, Const.SYSTEM_WINDOWS_CODE);
-        } else {
-            startOverly();
-        }
-    }
 
     public void startOverly() {
-
-        Intent intent = new Intent(this, FloatingControlService.class);
-        startService(intent);
+        Intent intent = new Intent(this, OverlyPermissionActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
     //Pass the system windows permission result to settings fragment
     @TargetApi(23)
@@ -439,6 +428,12 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 Toast.makeText(MainActivity.this, "Thanks for purchasing your item.", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public void exitOverly() {
+        Intent overlayIntent = new Intent(this, FloatingControlService.class);
+        overlayIntent.setAction("stop");
+        startService(overlayIntent);
     }
 
     //ViewPager class for tab view
