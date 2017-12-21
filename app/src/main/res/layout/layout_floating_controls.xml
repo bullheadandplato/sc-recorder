@@ -4,8 +4,10 @@
     <LinearLayout
         android:id="@+id/record_overlay_buttons"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="50dp"
         android:layout_gravity="end"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp"
         android:orientation="horizontal">
         <ImageButton
             android:id="@+id/record_overlay_cancel"
@@ -28,18 +30,22 @@
     <TextView
         android:id="@+id/record_overlay_recording"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="50dp"
         android:gravity="center"
         android:text="@string/record"
         android:textColor="#fff"
         android:textStyle="bold"
         android:textAllCaps="true"
         android:background="@color/accent_pressed"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp" />
 
     <View
         android:id="@+id/record_overlay_stop"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp"
         android:visibility="invisible" />
 </merge>

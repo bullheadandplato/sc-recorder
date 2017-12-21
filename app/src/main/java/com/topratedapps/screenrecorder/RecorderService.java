@@ -249,16 +249,6 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
         if (isBound)
             floatingControlService.setRecordingState(Const.RecordingState.RECORDING);
 
-
-        //Send a broadcast receiver to the plugin app to enable show touches since the recording is resumed
-        if (showTouches) {
-            if (showTouches) {
-                Intent TouchIntent = new Intent();
-                TouchIntent.setAction("com.topratedapps.screenrecorder.SHOWTOUCH");
-                TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-                sendBroadcast(TouchIntent);
-            }
-        }
     }
 
     private void startRecording() {

@@ -53,7 +53,6 @@ import ly.count.android.sdk.Countly;
 public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener {
 
     private PermissionResultListener mPermissionResultListener;
-    private AnalyticsSettingsListerner analyticsSettingsListerner;
     private MediaProjection mMediaProjection;
     private MediaProjectionManager mProjectionManager;
     private FloatingActionButton fab;
@@ -321,9 +320,16 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getPackageName()));
             startActivityForResult(intent, Const.SYSTEM_WINDOWS_CODE);
+        } else {
+            startOverly();
         }
     }
 
+    public void startOverly() {
+
+        Intent intent = new Intent(this, FloatingControlService.class);
+        startService(intent);
+    }
     //Pass the system windows permission result to settings fragment
     @TargetApi(23)
     private void setSystemWindowsPermissionResult() {
@@ -466,7 +472,4 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
     }
 
-    public interface AnalyticsSettingsListerner {
-        void updateAnalyticsSettings(Const.analytics analytics);
-    }
 }

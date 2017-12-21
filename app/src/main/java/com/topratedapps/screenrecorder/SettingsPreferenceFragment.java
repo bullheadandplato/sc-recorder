@@ -19,6 +19,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -268,8 +269,16 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
     private void requestSystemWindowsPermission() {
         if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             activity.requestSystemWindowsPermission();
-        } else {
-            Log.d(Const.TAG, "API is < 23");
+        } else if (getActivity() != null) {
+            ((MainActivity) getActivity()).startOverly();
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (floatingControl.isChecked()) {
+            requestSystemWindowsPermission();
         }
     }
 

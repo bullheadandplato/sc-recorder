@@ -4,13 +4,11 @@
 
 package com.topratedapps.screenrecorder;
 
-import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 
@@ -29,11 +27,9 @@ public class FloatingControlService extends Service {
     private IBinder binder = new ServiceBinder();
     private OverlayView.Listener listener;
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-
 
         showOverlay();
         return START_STICKY;
@@ -50,9 +46,9 @@ public class FloatingControlService extends Service {
     }
 
     // Set pause intent and start the recording service
-    private void pauseScreenRecording() {
+    private void startScreenRecording() {
         Intent pauseIntent = new Intent(this, RecorderService.class);
-        pauseIntent.setAction(Const.SCREEN_RECORDING_PAUSE);
+        pauseIntent.setAction(Const.SCREEN_RECORDING_START);
         startService(pauseIntent);
     }
 
@@ -96,11 +92,6 @@ public class FloatingControlService extends Service {
         return super.onUnbind(intent);
     }
 
-    //Method to convert dp to px
-    private int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-    }
 
     void showOverlay() {
 
@@ -112,17 +103,19 @@ public class FloatingControlService extends Service {
 
             @Override
             public void onPrepare() {
-                listener.onPrepare();
+                //listener.onPrepare();
             }
 
             @Override
             public void onStart() {
-                resumeScreenRecording();
+                //resumeScreenRecording();
+                startScreenRecording();
             }
 
             @Override
             public void onStop() {
                 stopScreenSharing();
+                stopSelf();
             }
 
             @Override
@@ -145,6 +138,5 @@ public class FloatingControlService extends Service {
 
     private void cancelOverlay() {
         hideOverlay();
-
     }
 }
