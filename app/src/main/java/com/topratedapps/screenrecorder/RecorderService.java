@@ -220,13 +220,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
         if (isBound)
             floatingControlService.setRecordingState(Const.RecordingState.PAUSED);
 
-        //Send a broadcast receiver to the plugin app to disable show touches since the recording is paused
-        if (showTouches) {
-            Intent TouchIntent = new Intent();
-            TouchIntent.setAction("com.topratedapps.screenrecorder.DISABLETOUCH");
-            TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-            sendBroadcast(TouchIntent);
-        }
+
     }
 
     @TargetApi(24)
@@ -387,6 +381,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
 
         Intent recordStopIntent = new Intent(this, RecorderService.class);
         recordStopIntent.setAction(Const.SCREEN_RECORDING_STOP);
+        PendingIntent precordStopIntent = PendingIntent.getService(this, 0, recordStopIntent, 0);
 
         Intent UIIntent = new Intent(this, MainActivity.class);
         PendingIntent notificationContentIntent = PendingIntent.getActivity(this, 0, UIIntent, 0);
@@ -401,6 +396,10 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
                 .setOngoing(true)
                 .setContentIntent(notificationContentIntent)
                 .setPriority(NotificationManager.IMPORTANCE_DEFAULT);
+
+        if (!prefs.getBoolean(getString(R.string.preference_floating_control_key), false)) {
+            notification.addAction(R.drawable.ic_notification_close, "Stop", precordStopIntent);
+        }
 
         if (action != null)
             notification.addAction(action);
