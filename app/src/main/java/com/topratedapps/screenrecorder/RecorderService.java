@@ -401,9 +401,8 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
                 .setUsesChronometer(true)
                 .setOngoing(true)
                 .setContentIntent(notificationContentIntent)
-                .setPriority(NotificationManager.IMPORTANCE_DEFAULT)
-                .addAction(R.drawable.ic_notification_stop, getResources().getString(R.string.screen_recording_notification_action_stop),
-                        precordStopIntent);
+                .setPriority(NotificationManager.IMPORTANCE_DEFAULT);
+
         if (action != null)
             notification.addAction(action);
         return notification;
