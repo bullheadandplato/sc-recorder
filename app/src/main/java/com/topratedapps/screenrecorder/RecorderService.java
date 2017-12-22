@@ -377,7 +377,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
      * API24 */
     private NotificationCompat.Builder createRecordingNotification(NotificationCompat.Action action) {
         Bitmap icon = BitmapFactory.decodeResource(getResources(),
-                R.mipmap.ic_launcher);
+                R.drawable.icon);
 
         Intent recordStopIntent = new Intent(this, RecorderService.class);
         recordStopIntent.setAction(Const.SCREEN_RECORDING_STOP);
@@ -389,7 +389,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this, Const.RECORDING_NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getResources().getString(R.string.screen_recording_notification_title))
                 .setTicker(getResources().getString(R.string.screen_recording_notification_title))
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(R.drawable.icon)
                 .setLargeIcon(
                         Bitmap.createScaledBitmap(icon, 128, 128, false))
                 .setUsesChronometer(true)

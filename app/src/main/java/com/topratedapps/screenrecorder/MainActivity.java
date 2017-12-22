@@ -42,6 +42,9 @@ import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        loadAd();
         //initBilling
         setupBilling();
 
@@ -165,6 +169,29 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
     }
 
+    private void loadAd() {
+        final InterstitialAd ad = new InterstitialAd(this);
+        ad.setAdUnitId(getString(R.string.ad_interstitial_id));
+
+        ad.loadAd(new AdRequest.Builder().addTestDevice("D03818F754E63AD6FE3E15572190E40B").build());
+        ad.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                ad.show();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+            }
+
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+            }
+        });
+    }
     private boolean purchasedTouch = false;
 
     private void queryPurchase() {

@@ -9,8 +9,8 @@
     <color name="primaryColor">#f5f5f5</color>
     <color name="primaryLightColor">#ffffff</color>
     <color name="primaryDarkColor">#c2c2c2</color>
-    <color name="secondaryColor">#00796b</color>
-    <color name="secondaryLightColor">#48a999</color>
+    <color name="secondaryColor">#e53c7f</color>
+    <color name="secondaryLightColor">#e53c7f</color>
     <color name="secondaryDarkColor">#004c40</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#ffffff</color>
@@ -22,7 +22,7 @@
     <color name="colorPrimaryDark_dark">@android:color/black</color>
     <color name="textColorPrimary_dark">@android:color/white</color>
     <color name="textColorSecondary_dark">#fafafa</color>
-    <color name="colorAccent_dark">#009688</color>
+    <color name="colorAccent_dark">#e53c7f</color>
     <color name="windowBackground_dark">#212121</color>
     <color name="navigationBarColor_dark">@android:color/black</color>
     <color name="actionBarStyle_dark">@android:color/black</color>
@@ -33,7 +33,7 @@
     <color name="colorPrimaryDark_black">@android:color/black</color>
     <color name="textColorPrimary_black">@android:color/white</color>
     <color name="textColorSecondary_black">#fafafa</color>
-    <color name="colorAccent_black">#009688</color>
+    <color name="colorAccent_black">#e53c7f</color>
     <color name="windowBackground_black">@android:color/black</color>
     <color name="navigationBarColor_black">@android:color/black</color>
     <color name="actionBarStyle_black">@android:color/black</color>

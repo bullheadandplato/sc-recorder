@@ -116,7 +116,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        adView.loadAd(new AdRequest.Builder().build());
+        adView.loadAd(new AdRequest.Builder().addTestDevice("D03818F754E63AD6FE3E15572190E40B").build());
     }
 
     //Check if we have permission to read the external storage. The fragment is useless without this

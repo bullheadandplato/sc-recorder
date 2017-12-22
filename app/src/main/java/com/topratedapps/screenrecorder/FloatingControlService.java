@@ -105,7 +105,7 @@ public class FloatingControlService extends Service {
                 PendingIntent.getActivity(this, 2, launchAppIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_notification_small)
+                        .setSmallIcon(R.drawable.icon)
                         .setContentTitle("Screen recorder is running")
                         .addAction(R.drawable.ic_notification_close, "Exit", exitPendingIntent())
                         .addAction(R.drawable.ic_notification_small, secondAction, secondIntent)

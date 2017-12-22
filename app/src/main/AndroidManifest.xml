@@ -4,6 +4,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.topratedapps.screenrecorder">
 
+    <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
