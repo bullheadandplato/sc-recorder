@@ -69,7 +69,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
                 android.R.color.holo_blue_dark);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
+        checkPermission();
         return view;
     }
 

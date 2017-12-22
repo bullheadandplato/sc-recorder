@@ -44,6 +44,7 @@ import java.util.Locale;
 
 /**
  * Created by bullhead on 07-11-2017.
+ *
  */
 
 //Custom Recycler view adapter for video list fragment
