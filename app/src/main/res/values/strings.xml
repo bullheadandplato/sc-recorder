@@ -125,4 +125,8 @@
     <string name="countdown_two">2…</string>
     <string name="countdown_three">3…</string>
     <string name="stop">Stop</string>
+
+    <string name="ad_app_id" translatable="false">ca-app-pub-4440517763038694~1767734281</string>
+    <string name="ad_banner_id" translatable="false">ca-app-pub-4440517763038694/6207997588</string>
+    <string name="ad_interstitial_id">ca-app-pub-4440517763038694/4148810452</string>
 </resources>

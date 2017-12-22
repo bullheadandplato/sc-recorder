@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -30,6 +31,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.topratedapps.screenrecorder.adapter.Video;
 import com.topratedapps.screenrecorder.adapter.VideoRecyclerAdapter;
 
@@ -50,6 +53,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
     private SharedPreferences prefs;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<Video> videosList = new ArrayList<>();
+    private AdView adView;
 
     public VideosListFragment() {
 
@@ -60,7 +64,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         View view = inflater.inflate(R.layout.fragment_videos, container, false);
         message = view.findViewById(R.id.message_tv);
         videoRV = view.findViewById(R.id.videos_rv);
-
+        adView = view.findViewById(R.id.adView);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
@@ -107,6 +111,12 @@ public class VideosListFragment extends Fragment implements PermissionResultList
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        adView.loadAd(new AdRequest.Builder().build());
     }
 
     //Check if we have permission to read the external storage. The fragment is useless without this

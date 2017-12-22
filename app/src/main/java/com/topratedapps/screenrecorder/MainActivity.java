@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
         fab = findViewById(R.id.fab);
 
+        fab.hide();
         if (isServiceRunning(RecorderService.class)) {
             Log.d(Const.TAG, "service is running");
         }
